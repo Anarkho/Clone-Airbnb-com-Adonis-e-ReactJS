@@ -18,3 +18,6 @@ const Route = use('Route')
 
 Route.post('/users', 'UserController.create') // cria usuario
 Route.post('/sessions', 'SessionController.create') // autenticação usuario
+Route.resource('properties', 'PropertyController') // todas rotas dos metodos do crud imovel com autenticação
+  .apiOnly()
+  .middleware('auth')
