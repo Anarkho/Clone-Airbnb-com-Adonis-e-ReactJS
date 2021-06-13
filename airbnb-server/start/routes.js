@@ -17,4 +17,4 @@
 const Route = use('Route')
 
 Route.post('/users', 'UserController.create') // cria usuario
-
+Route.post('/sessions', 'SessionController.create') // autenticação usuario
