@@ -21,3 +21,5 @@ Route.post('/sessions', 'SessionController.create') // autenticação usuario
 Route.resource('properties', 'PropertyController') // todas rotas dos metodos do crud imovel com autenticação
   .apiOnly()
   .middleware('auth')
+
+
