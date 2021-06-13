@@ -21,5 +21,6 @@ Route.post('/sessions', 'SessionController.create') // autenticação usuario
 Route.resource('properties', 'PropertyController') // todas rotas dos metodos do crud imovel com autenticação
   .apiOnly()
   .middleware('auth')
-
-
+Route.post('properties/:id/images', 'ImageController.store') // registrar imagens
+  .middleware('auth')
+Route.get('images/:path', 'ImageController.show') // mostrar imagens
