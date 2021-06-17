@@ -32,39 +32,39 @@ const Input = styled.TextInput`
 `;
 
 const ErrorMessage = styled.Text`
-  textAlign: center;
+  text-Align: center;
   color: #ce2029;
-  fontSize: 16px;
-  marginBottom: 15px;
+  font-Size: 16px;
+  margin-Bottom: 15px;
   marginHorizontal: 20px;
 `;
 
 const Button = styled.TouchableHighlight`
   padding: 20px;
-  borderRadius: 5px;
-  backgroundColor: #fc6663;
-  alignSelf: stretch;
+  border-Radius: 5px;
+  background-Color: #fc6663;
+  align-Self: stretch;
   margin: 15px;
   marginHorizontal: 20px;
 `;
 
 const ButtonText = styled.Text`
   color: #fff;
-  fontWeight: bold;
-  fontSize: 16px;
-  textAlign: center;
+  font-Weight: bold;
+  font-Size: 16px;
+  text-Align: center;
 `;
 
 const SignInLink = styled.TouchableHighlight`
   padding: 10px;
-  marginTop: 20px;
+  margin-Top: 20px;
 `;
 
 const SignInLinkText = styled.Text`
   color: #999;
-  fontWeight: bold;
-  fontSize: 16px;
-  textAlign: center;
+  font-Weight: bold;
+  font-Size: 16px;
+  text-Align: center;
 `;
 
 export {

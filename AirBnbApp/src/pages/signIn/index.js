@@ -59,7 +59,6 @@ class SignIn extends Component {
                 });
                 this.props.navigation.navigate('Main')
 
-                console.log('criando')
             } catch (_err) {
                 this.setState({ error: 'Houve um problema com o login, verifique suas credenciais!' });
             }
