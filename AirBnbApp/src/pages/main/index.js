@@ -1,23 +1,43 @@
 import React, { Component } from "react";
-import { } from "react-native";
+import { Platform, PermissionsAndroid, View } from "react-native";
 import api from '../../services/api'
 import MapboxGL from "@react-native-mapbox-gl/maps";
 
 import {
   Container,
   AnnotationContainer,
-  AnnotationText
+  AnnotationText,
+  NewButtonContainer,
+  ButtonsWrapper,
+  CancelButtonContainer,
+  SelectButtonContainer,
+  ButtonText,
+  Marker
 } from './styles'
 
 MapboxGL.setAccessToken('pk.eyJ1IjoiY2F2YWxlaXJvLXBhbGlkbyIsImEiOiJja3EwN2liMXgwMjc2MnBrMTIxYmx2bHVvIn0.9WE7jRWiEkPPpyq7pO0fSw');
 
 MapboxGL.setConnected(true);
 
+
 class Main extends Component {
 
   state = {
     locations: [],
-  }
+    newRealty: false,
+    cameraModalOpened: false,
+    dataModalOpened: false,
+    realtyData: {
+      location: {
+        latitude: 0,
+        longitude: 0,
+      },
+      name: '',
+      price: '',
+      address: '',
+      images: [],
+    },
+  };
 
   async componentDidMount() {
     try {
@@ -32,8 +52,58 @@ class Main extends Component {
     } catch (err) {
       console.log(err);
     }
+
+  }
+  // CONDIÇÃO DE RENDERIZAÇÃO DOS BOTÕES
+  renderConditionalsButtons = () => (
+    !this.state.newRealty ? (
+      <NewButtonContainer onPress={this.handleNewRealtyPress}>
+        <ButtonText >Novo Imóvel</ButtonText>
+      </NewButtonContainer>
+    ) : (
+      <ButtonsWrapper>
+        <SelectButtonContainer onPress={this.handleGetPositionPress}>
+          <ButtonText>
+            Selecionar localização
+          </ButtonText>
+        </SelectButtonContainer>
+        <CancelButtonContainer onPress={this.handleNewRealtyPress}>
+          <ButtonText>Cancelar</ButtonText>
+        </CancelButtonContainer>
+      </ButtonsWrapper>
+    )
+  )
+
+  renderMarker = () => (
+    this.state.newRealty &&
+    !this.state.cameraModalOpened &&
+    <Marker resizeMode="contain" source={require('../../images/marker.png')} />
+  )
+  // METODOS
+  handleNewRealtyPress = () => {
+    this.setState({ newRealty: !this.state.newRealty, cameraModalOpened: false })
+  }
+  handleGetPositionPress = async () => {
+    try {
+      const [longitude, latitude] = await this.map.getCenter();
+      this.setState({
+        cameraModalOpened: true,
+        realtyData: {
+          ...this.state.realtyData,
+          location: {
+            latitude: latitude,
+            longitude: longitude,
+          }
+        }
+      });
+    } catch (err) {
+      console.log(err);
+    }
+
+    console.log(await this.map.getCenter())
   }
 
+  // RENDERIZAR LOCALIZAÇÃO  IMOVEIS
   renderLocations = () => (
     this.state.locations.map((location, key) => (
       <MapboxGL.PointAnnotation
@@ -46,7 +116,7 @@ class Main extends Component {
         </AnnotationContainer>
         <MapboxGL.Callout title={location.title} />
       </MapboxGL.PointAnnotation>
-      
+
     ))
   )
 
@@ -57,6 +127,9 @@ class Main extends Component {
 
       <Container>
         <MapboxGL.MapView
+          ref={map => {
+            this.map = map;
+          }}
           style={{ flex: 1 }}
           styleURL={MapboxGL.StyleURL.Dark}
           zoomLevel={17}
@@ -71,9 +144,11 @@ class Main extends Component {
             animationMode={'easeTo'}
             animationDuration={0}
           />
-
+          
+          
         </MapboxGL.MapView>
-
+        {this.renderConditionalsButtons()}
+        {this.renderMarker()}
       </Container>
 
     );
