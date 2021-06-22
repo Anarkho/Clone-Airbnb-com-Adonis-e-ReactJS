@@ -1,5 +1,6 @@
 import React, { Component } from "react";
-import { Platform, PermissionsAndroid, View } from "react-native";
+import { StatusBar, Modal } from "react-native";
+import { RNCamera } from 'react-native-camera'
 import api from '../../services/api'
 import MapboxGL from "@react-native-mapbox-gl/maps";
 
@@ -12,8 +13,18 @@ import {
   CancelButtonContainer,
   SelectButtonContainer,
   ButtonText,
-  Marker
-} from './styles'
+  Marker,
+  ModalContainer,
+  ModalImagesListContainer,
+  ModalImagesList,
+  ModalImageItem,
+  ModalButtons,
+  CameraButtonContainer,
+  CancelButtonText,
+  ContinueButtonText,
+  TakePictureButtonContainer,
+  TakePictureButtonLabel,
+} from './styles';
 
 MapboxGL.setAccessToken('pk.eyJ1IjoiY2F2YWxlaXJvLXBhbGlkbyIsImEiOiJja3EwN2liMXgwMjc2MnBrMTIxYmx2bHVvIn0.9WE7jRWiEkPPpyq7pO0fSw');
 
@@ -120,6 +131,82 @@ class Main extends Component {
     ))
   )
 
+  // Modal
+  renderCameraModal = () => (
+    <Modal
+      visible={this.state.cameraModalOpened}
+      transparent={false}
+      animationType="slide"
+      onRequestClose={this.handleCameraModalClose}
+    >
+      <ModalContainer>
+        <ModalContainer>
+          <RNCamera
+            ref={camera => {
+              this.camera = camera;
+            }}
+            style={{ flex: 1 }}
+            type={RNCamera.Constants.Type.back}
+            autoFocus={RNCamera.Constants.AutoFocus.on}
+            flashMode={RNCamera.Constants.FlashMode.off}
+            permissionDialogTitle={"Permission to use camera"}
+            permissionDialogMessage={
+              "We need your permission to use your camera phone"
+            }
+          />
+          <TakePictureButtonContainer onPress={this.handleTakePicture}>
+            <TakePictureButtonLabel />
+          </TakePictureButtonContainer>
+        </ModalContainer>
+        {this.renderImagesList()}
+        <ModalButtons>
+          <CameraButtonContainer onPress={this.handleCameraModalClose}>
+            <CancelButtonText>Cancelar</CancelButtonText>
+          </CameraButtonContainer>
+          <CameraButtonContainer onPress={this.handleDataModalClose}>
+            <ContinueButtonText>Continuar</ContinueButtonText>
+          </CameraButtonContainer>
+        </ModalButtons>
+      </ModalContainer>
+    </Modal>
+  )
+  // METODOS
+  handleTakePicture = async () => {
+    if (this.camera) {
+      const options = { quality: 0.5, base64: true, forceUpOrientation: true, fixOrientation: true, };
+      const data = await this.camera.takePictureAsync(options)
+      const { realtyData } = this.state;
+      this.setState({
+        realtyData: {
+          ...realtyData,
+          images: [
+            ...realtyData.images,
+            data,
+          ]
+        }
+      })
+    }
+  }
+
+  renderImagesList = () => (
+    this.state.realtyData.images.length !== 0 ? (
+      <ModalImagesListContainer>
+        <ModalImagesList horizontal>
+          {this.state.realtyData.images.map(image => (
+            <ModalImageItem source={{ uri: image.uri }} resizeMode="stretch" />
+          ))}
+        </ModalImagesList>
+      </ModalImagesListContainer>
+    ) : null
+  )
+
+  handleCameraModalClose = () => this.setState({ cameraModalOpened: !this.state.cameraModalOpened })
+
+  handleDataModalClose = () => this.setState({
+    dataModalOpened: !this.state.dataModalOpened,
+    cameraModalOpened: false,
+  })
+
 
   render() {
 
@@ -144,11 +231,12 @@ class Main extends Component {
             animationMode={'easeTo'}
             animationDuration={0}
           />
-          
-          
+
+
         </MapboxGL.MapView>
         {this.renderConditionalsButtons()}
         {this.renderMarker()}
+        { this.renderCameraModal() }
       </Container>
 
     );
