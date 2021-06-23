@@ -51,6 +51,10 @@ class Main extends Component {
   };
 
   async componentDidMount() {
+    this.getLocation()
+  }
+
+  getLocation = async () => {
     try {
       const response = await api.get('/properties', {
         params: {
@@ -63,8 +67,8 @@ class Main extends Component {
     } catch (err) {
       console.log(err);
     }
-
   }
+
   // CONDIÇÃO DE RENDERIZAÇÃO DOS BOTÕES
   renderConditionalsButtons = () => (
     !this.state.newRealty ? (
@@ -149,10 +153,12 @@ class Main extends Component {
             type={RNCamera.Constants.Type.back}
             autoFocus={RNCamera.Constants.AutoFocus.on}
             flashMode={RNCamera.Constants.FlashMode.off}
-            permissionDialogTitle={"Permission to use camera"}
-            permissionDialogMessage={
-              "We need your permission to use your camera phone"
-            }
+            androidRecordAudioPermissionOptions={{
+              title: 'Permissão para usar Camera!',
+              message: 'Essa permissão dá o direito ao usuario de gravar videos e capturar imagens',
+              buttonPositive: 'Ok',
+              buttonNegative: 'Cancelar',
+            }}
           />
           <TakePictureButtonContainer onPress={this.handleTakePicture}>
             <TakePictureButtonLabel />
@@ -192,8 +198,8 @@ class Main extends Component {
     this.state.realtyData.images.length !== 0 ? (
       <ModalImagesListContainer>
         <ModalImagesList horizontal>
-          {this.state.realtyData.images.map(image => (
-            <ModalImageItem source={{ uri: image.uri }} resizeMode="stretch" />
+          {this.state.realtyData.images.map((image, id) => (
+            <ModalImageItem key={id} source={{ uri: image.uri }} resizeMode="stretch" />
           ))}
         </ModalImagesList>
       </ModalImagesListContainer>
@@ -206,7 +212,149 @@ class Main extends Component {
     dataModalOpened: !this.state.dataModalOpened,
     cameraModalOpened: false,
   })
+  // TELA DE INFORMAÇÕES E CADASTRO API
+  renderDataModal = () => (
+    <Modal
+      visible={this.state.dataModalOpened}
+      transparent={false}
+      animationType="slide"
+      onRequestClose={this.handleDataModalClose}
+    >
+      <ModalContainer>
+        <ModalContainer>
+          <MapboxGL.MapView
+            centerCoordinate={[
+              this.state.realtyData.location.longitude,
+              this.state.realtyData.location.latitude
+            ]}
+            style={{ flex: 1 }}
+            styleURL={MapboxGL.StyleURL.Dark}
+          >
+            <MapboxGL.PointAnnotation
+              id="center"
+              coordinate={[
+                this.state.realtyData.location.longitude,
+                this.state.realtyData.location.latitude
+              ]}
+            >
+              <MarkerContainer>
+                <MarkerLabel />
+              </MarkerContainer>
+            </MapboxGL.PointAnnotation>
+          </MapboxGL.MapView>
+        </ModalContainer>
+        {this.renderImagesList()}
+        <Form>
+          <Input
+            placeholder="Nome do Imóvel"
+            value={this.state.realtyData.name}
+            onChangeText={name => this.handleInputChange('name', name)}
+            autoCapitalize="none"
+            autoCorrect={false}
+          />
+          <Input
+            placeholder="Endereço"
+            value={this.state.realtyData.address}
+            onChangeText={address => this.handleInputChange('address', address)}
+            autoCapitalize="none"
+            autoCorrect={false}
+          />
+          <Input
+            placeholder="Preço"
+            value={this.state.realtyData.price}
+            onChangeText={price => this.handleInputChange('price', price)}
+            autoCapitalize="none"
+            autoCorrect={false}
+          />
+        </Form>
+        <DataButtonsWrapper>
+          <SelectButtonContainer onPress={this.saveRealty}>
+            <ButtonText>Salvar Imóvel</ButtonText>
+          </SelectButtonContainer>
+          <CancelButtonContainer onPress={this.handleDataModalClose}>
+            <ButtonText>Cancelar</ButtonText>
+          </CancelButtonContainer>
+        </DataButtonsWrapper>
+      </ModalContainer>
+    </Modal>
+  )
 
+  // METODOS TELA INFORMAÇOES
+  handleInputChange = (index, value) => {
+    const { realtyData } = this.state;
+    switch (index) {
+      case 'name':
+        this.setState({
+          realtyData: {
+            ...realtyData,
+            name: value,
+          }
+        });
+        break;
+      case 'address':
+        this.setState({
+          realtyData: {
+            ...realtyData,
+            address: value,
+          }
+        });
+        break;
+      case 'price':
+        this.setState({
+          realtyData: {
+            ...realtyData,
+            price: value,
+          }
+        });
+        break;
+    }
+  }
+
+  saveRealty = async () => {
+    try {
+      const {
+        realtyData: {
+          name,
+          address,
+          price,
+          location: {
+            latitude,
+            longitude
+          },
+          images
+        }
+      } = this.state;
+
+      const newRealtyResponse = await api.post('/properties', {
+        title: name,
+        address,
+        price,
+        latitude: Number(latitude.toFixed(6)),
+        longitude: Number(longitude.toFixed(6)),
+      });
+
+      const imagesData = new FormData();
+
+      images.forEach((image, index) => {
+        imagesData.append('image', {
+          uri: image.uri,
+          type: 'image/jpeg',
+          name: `${newRealtyResponse.data.title}_${index}.jpg`
+        });
+      });
+
+      await api.post(
+        `/properties/${newRealtyResponse.data.id}/images`,
+        imagesData,
+      );
+
+      this.getLocation()
+      this.setState({ newRealty: false });
+      this.handleDataModalClose()
+    } catch (err) {
+      console.tron.log(err);
+    }
+  }
 
   render() {
 
@@ -236,7 +384,7 @@ class Main extends Component {
         </MapboxGL.MapView>
         {this.renderConditionalsButtons()}
         {this.renderMarker()}
-        { this.renderCameraModal() }
+        {this.renderCameraModal()}
       </Container>
 
     );
