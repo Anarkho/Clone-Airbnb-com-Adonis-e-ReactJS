@@ -132,7 +132,7 @@ export const DataButtonsWrapper = styled.View`
   flex: 1;
   align-Items: center;
   justify-Content: center;
-  paddingHorizontal: 20px;
+  paddingHorizontal: 40px;
 `;
 
 export const MarkerContainer = styled.View`
@@ -170,7 +170,7 @@ export const Input = styled.TextInput`
 `;
 
 export const DetailsModalFirstDivision = styled.View`
-  flex: 3;
+  flex: 1;
   align-Items: center;
   justify-Content: center;
 `;
@@ -182,7 +182,7 @@ export const DetailsModalSecondDivision = styled.View`
 `;
 
 export const DetailsModalThirdDivision = styled.View`
-  flex: 3;
+  flex: 2;
   align-Items: center;
   justify-Content: center;
 `;
@@ -194,15 +194,15 @@ export const DetailsModalBackButton = styled.Text`
 `;
 
 export const DetailsModalRealtyTitle = styled.Text`
-  font-Size: 28px;
+  font-Size: 18px;
   font-Weight: bold;
   text-Align: center;
-  margin-Bottom: 15px;
+  margin-Bottom: 5px;
   marginHorizontal: 40px;
 `;
 
 export const DetailsModalRealtySubTitle = styled.Text`
-  font-Size: 22px;
+  font-Size: 15px;
   text-Align: center;
   margin-Bottom: 15px;
   marginHorizontal: 40px;
