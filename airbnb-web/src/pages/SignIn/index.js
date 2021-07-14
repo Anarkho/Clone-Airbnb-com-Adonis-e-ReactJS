@@ -23,7 +23,7 @@ class SignIn extends Component {
       try {
         const response = await api.post("/sessions", { email, password });
         login(response.data.token);
-        this.props.history.push("/app");
+        this.props.history.push("/mapa");
       } catch (err) {
         this.setState({
           error:
