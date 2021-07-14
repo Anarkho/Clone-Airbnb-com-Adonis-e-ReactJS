@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import { Marker } from "react-map-gl";
 import { Link } from "react-router-dom";
 import PropTypes from "prop-types";
@@ -19,7 +19,7 @@ const Properties = ({ properties }) =>
       latitude={parseFloat(property.latitude)}
     >
       <Pin>
-        <Link to="">{intlMonetary.format(property.price)}</Link>
+        <Link to="/teste">{intlMonetary.format(property.price)}</Link>
       </Pin>
     </Marker>
   ));

@@ -1,13 +1,18 @@
 import React, { Component } from "react";
 import Dimensions from "react-dimensions";
-import { Container } from "./styles";
+import { Container, ButtonContainer } from "./styles";
+import Button from "./components/Button";
 import MapGL from "react-map-gl";
 import PropTypes from "prop-types";
 
 import debounce from "lodash/debounce";
 import api from "../../services/api.js";
 
-import Properties from './components/properties';
+import { withRouter } from "react-router-dom";
+
+import { logout } from "../../services/auth";
+
+import Properties from './components/Properties';
 
 const TOKEN =
     "pk.eyJ1IjoiY2F2YWxlaXJvLXBhbGlkbyIsImEiOiJja3EwN2liMXgwMjc2MnBrMTIxYmx2bHVvIn0.9WE7jRWiEkPPpyq7pO0fSw";
@@ -57,11 +62,27 @@ class Map extends Component {
         }
     };
 
+    handleLogout = e => {
+        logout();
+        this.props.history.push("/");
+      };
+    
+      renderActions() {
+        return (
+          <ButtonContainer>
+            <Button color="#222" onClick={this.handleLogout}>
+              <i className="fa fa-times" />
+            </Button>
+          </ButtonContainer>
+        );
+      }
+
 
     render() {
         const { containerWidth: width, containerHeight: height } = this.props;
         const { properties } = this.state;
         return (
+            <>
           <MapGL
             width={width}
             height={height}
@@ -73,11 +94,13 @@ class Map extends Component {
           >
             <Properties properties={properties} />
           </MapGL>
+          {this.renderActions()}
+          </>
         );
     }
 }
 
-const DimensionedMap = Dimensions()(Map);
+const DimensionedMap = withRouter(Dimensions()(Map));
 const Main = () => (
     <Container>
         <DimensionedMap />
