@@ -5,6 +5,8 @@ import Button from "./components/Button";
 import MapGL from "react-map-gl";
 import PropTypes from "prop-types";
 
+import Property from "../Property";
+
 import debounce from "lodash/debounce";
 import api from "../../services/api.js";
 
@@ -141,6 +143,11 @@ class Map extends Component {
                     path={`${match.url}/properties/add`}
                     parentPath={match.url}
                     component={AddProperty}
+                />
+                <ModalRoute
+                    path={`${match.url}/property/:id`}
+                    parentPath={match.url}
+                    component={Property}
                 />
             </Fragment>
         );
