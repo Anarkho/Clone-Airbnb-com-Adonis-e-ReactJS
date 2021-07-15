@@ -8,6 +8,9 @@ import PropTypes from "prop-types";
 import debounce from "lodash/debounce";
 import api from "../../services/api.js";
 
+import { ModalRoute } from "react-router-modal";
+import AddProperty from "../AddProperty";
+
 import { withRouter } from "react-router-dom";
 
 import { logout } from "../../services/auth";
@@ -109,11 +112,11 @@ class Map extends Component {
         const { match, history } = this.props;
         const { latitude, longitude } = this.state.viewport;
         history.push(
-          `${match.url}/properties/add?latitude=${latitude}&longitude=${longitude}`
+            `${match.url}/properties/add?latitude=${latitude}&longitude=${longitude}`
         );
-        
+
         this.setState({ addActivate: false });
-      };
+    };
 
 
     render() {
@@ -130,10 +133,15 @@ class Map extends Component {
                     onViewportChange={viewport => this.setState({ viewport })}
                     onViewStateChange={this.updatePropertiesLocalization.bind(this)}
                 >
-                  {!addActivate && <Properties match={match} properties={properties} />}
+                    {!addActivate && <Properties match={match} properties={properties} />}
                 </MapGL>
                 {this.renderActions()}
                 {this.renderButtonAdd()}
+                <ModalRoute
+                    path={`${match.url}/properties/add`}
+                    parentPath={match.url}
+                    component={AddProperty}
+                />
             </Fragment>
         );
     }
