@@ -63,6 +63,7 @@ export default class Main extends Component {
       address: '',
       images: [],
     },
+    mostrar: true
   };
 
   componentDidMount() {
@@ -342,6 +343,8 @@ export default class Main extends Component {
             onChangeText={name => this.handleInputChange('name', name)}
             autoCapitalize="none"
             autoCorrect={false}
+            onFocus={()=> {this.setState({mostrar: false})}}
+            onEndEditing={()=> this.setState({mostrar: true})}
           />
           <Input
             placeholder="Endereço"
@@ -349,6 +352,8 @@ export default class Main extends Component {
             onChangeText={address => this.handleInputChange('address', address)}
             autoCapitalize="none"
             autoCorrect={false}
+            onFocus={()=> {this.setState({mostrar: false})}}
+            onEndEditing={()=> this.setState({mostrar: true})}
           />
           <Input
             placeholder="Preço"
@@ -356,9 +361,12 @@ export default class Main extends Component {
             onChangeText={price => this.handleInputChange('price', price)}
             autoCapitalize="none"
             autoCorrect={false}
+            onFocus={()=> {this.setState({mostrar: false})}}
+            onEndEditing={()=> this.setState({mostrar: true})}
           />
         </Form>
-        <DataButtonsWrapper>
+        { this.state.mostrar &&
+          <DataButtonsWrapper>
           <SelectButtonContainer onPress={this.saveRealty}>
             <ButtonText>Salvar Imóvel</ButtonText>
           </SelectButtonContainer>
@@ -366,6 +374,7 @@ export default class Main extends Component {
             <ButtonText>Cancelar</ButtonText>
           </CancelButtonContainer>
         </DataButtonsWrapper>
+        }
       </ModalContainer>
     </Modal>
   )
