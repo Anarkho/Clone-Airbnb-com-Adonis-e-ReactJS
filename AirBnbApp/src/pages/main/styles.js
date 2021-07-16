@@ -153,7 +153,7 @@ export const MarkerLabel = styled.View`
 
 export const Form = styled.View`
   flex: 1;
-  margin-Top: 20px;
+  margin-Top: -60px;
 `;
 
 export const Input = styled.TextInput`
